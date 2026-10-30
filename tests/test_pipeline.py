@@ -3,10 +3,12 @@ Unit tests for PPG filtering and heart rate estimation algorithms.
 """
 
 import numpy as np
-from src.filters.bandpass import butter_bandpass_filter, moving_average, normalize_ac_dc
+
 from src.algorithms.peak_detection import estimate_hr_peaks
 from src.algorithms.spectral_analysis import estimate_hr_spectral
+from src.filters.bandpass import butter_bandpass_filter, moving_average, normalize_ac_dc
 from src.utils.data_loader import generate_synthetic_ppg
+from src.utils.plotting import generate_all_report_graphs
 
 
 def test_end_to_end_hr_estimation():
@@ -27,4 +29,13 @@ def test_end_to_end_hr_estimation():
     # 3. Method 2: Spectral Analysis
     bpm_spectral, _, _ = estimate_hr_spectral(smoothed, fs=fs)
     assert np.isclose(bpm_spectral, target_bpm, atol=3.0)
+
+
+def test_report_graphs_generation(tmp_path):
+    paths = generate_all_report_graphs(output_dir=tmp_path)
+    assert len(paths) == 4
+    for p in paths:
+        assert p.exists()
+        assert p.stat().st_size > 1000
+
 
