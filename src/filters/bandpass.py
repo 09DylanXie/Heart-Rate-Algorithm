@@ -7,6 +7,24 @@ moving average, and AC/DC pressure-variation normalization.
 import numpy as np
 from scipy import signal
 
+def five_to_fiteen_hz_filter(
+    data: np.ndarray,
+    fs: float = 100.0,
+    Lowcut: float = 5.0,
+    Highcut: float = 15.0,
+    order: int = 2,
+) -> np.ndarray:
+    """
+    Apply a  bandpass filter to isolate heart rate frequencies.
+    Optimized version for 5 to 15 HZ to isolate cardiac waveforms from noise. 
+    implemented filter ranges ~0.33 to 2.04HZ limiting detectable BPM to ~120.
+    """
+    nyq = 0.5 * fs
+    low = Lowcut / nyq
+    high = Highcut / nyq 
+    sos = signal.butter(order, [low, high], btype="bandpass", output="sos")
+    return signal.sosfiltfilt(sos, data)
+
 
 def butter_bandpass_filter(
     data: np.ndarray,
