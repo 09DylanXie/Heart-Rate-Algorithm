@@ -25,6 +25,23 @@ def five_to_fiteen_hz_filter(
     sos = signal.butter(order, [low, high], btype="bandpass", output="sos")
     return signal.sosfiltfilt(sos, data)
 
+def five_point_derivative(data: np.ndarray, slope: float,)-> float:
+    for n in range(len(data)):
+        if n <5:
+            continue
+         
+        else:
+            slope = 10*(2*data[n]+ data[n-1] - data[n-3]-2*data[n-4])
+    slope = slope*slope
+    """
+    Calculates slope (as a float) value of the filtered PPG wave. 
+    Uses 5 point derivative to provide more accurate slope compared to old simple difference
+    Squares slope value so pos and neg values contribute to peak energy
+    """    
+    
+
+
+    
 
 def butter_bandpass_filter(
     data: np.ndarray,
