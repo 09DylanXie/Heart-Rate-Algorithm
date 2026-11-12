@@ -6,24 +6,28 @@ moving average, and AC/DC pressure-variation normalization.
 
 import numpy as np
 from scipy import signal
+from scipy.signal import lfilter
 
-def five_to_fiteen_hz_filter(
-    data: np.ndarray,
-    fs: float = 100.0,
-    Lowcut: float = 5.0,
-    Highcut: float = 15.0,
-    order: int = 2,
-) -> np.ndarray:
-    """
-    Apply a  bandpass filter to isolate heart rate frequencies.
-    Optimized version for 5 to 15 HZ to isolate cardiac waveforms from noise. 
-    implemented filter ranges ~0.33 to 2.04HZ limiting detectable BPM to ~120.
-    """
-    nyq = 0.5 * fs
-    low = Lowcut / nyq
-    high = Highcut / nyq 
-    sos = signal.butter(order, [low, high], btype="bandpass", output="sos")
-    return signal.sosfiltfilt(sos, data)
+"""
+Re-implementation of cntrl-algrhtm filter's bandpass filters using updated alphas for 5-15hz
+alphas calculated using e^-2pi(fc/fs) with fc = 5, 15
+"""
+
+def five_to_fiteen_hz_filter(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
+ # --- Step 1: Baseline High-Pass Filter ---
+     # y[n] = 0.675 * (y[n-1] + x[n] - x[n-1])
+     hp_alpha = 0.675
+     b_hp = [hp_alpha, -hp_alpha]
+     a_hp = [1.0, -hp_alpha]
+     hp_out = lfilter(b_hp, a_hp, data_buffer)
+     
+     # --- Step 2: Baseline Low-Pass Filter ---
+     # y[n] = 0.308 * y[n-1] + 0.160 * x[n]
+     lp_alpha = 0.308
+     b_lp = [1.0 - lp_alpha]
+     a_lp = [1.0, -lp_alpha]
+     filt_data = lfilter(b_lp, a_lp, hp_out)
+     return filt_data
 
 def five_point_derivative(data: np.ndarray, slope: float,)-> float:
     for n in range(len(data)):

@@ -57,7 +57,7 @@ def apply_dynamic_threshold(z_signal: np.ndarray, fs: float = 80.0, pth: float =
     th_history = np.zeros(N)
     r_peaks = []
     
-    th = np.mean(z_signal[:int(fs)]) * 2.0  # Initial estimate from first second
+    th = np.mean(z_signal[:int(fs)]) * 2.0  # Initial estimate from first second of signal energy
     n = 0
     
     while n < N:
