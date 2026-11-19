@@ -63,6 +63,17 @@ def butter_bandpass_filter(
     high = highcut / nyq
     sos = signal.butter(order, [low, high], btype="bandpass", output="sos")
     return signal.sosfiltfilt(sos, data)
+"""""
+Larger moving average window to ensure no peaks are missed, 150ms continuous time sampling windnow 
+"""
+
+def test_moving_average(data: np.ndarray, window_size: int = 12) -> np.ndarray:
+    """Apply a simple moving average filter to smooth the signal."""
+    if window_size <= 1:
+        return data.copy()
+    kernel = np.ones(window_size) / window_size
+    return np.convolve(data, kernel, mode="same")
+
 
 
 def moving_average(data: np.ndarray, window_size: int = 5) -> np.ndarray:
