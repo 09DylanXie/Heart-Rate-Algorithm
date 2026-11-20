@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.signal import lfilter
 
-def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
+def find_peaks_control(data_buffer: np.ndarray, fs: float = 64.0, pth: float = 1.0) -> np.ndarray:
     """
     Control algorithm (current stm32 algorithm) implementing:
     - First-order High-Pass (alpha = 0.975)
@@ -58,12 +58,12 @@ def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
             th = np.mean(max_val)
         else:
             # Exponential decay threshold update
-            th *= np.exp(-1.0 / fs)
+            th *= np.exp(-pth / fs)
             n += 1
             
     return np.array(r_peaks, dtype=int)
 
-# Low pass filter
+# High pass filter
 # y[n] = 0.975 * (y[n-1] + x[n] - x[n-1])
 # a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M] --> (1.0)*y[n] = hp_alpha*x[n] - hp_alpha*x[n-1]
 #                       - a[1]*y[n-1] - ... - a[N]*y[n-N] -->                            + hp_alpha*y[n-1]
@@ -75,7 +75,7 @@ def high_pass_filter(data_buffer: np.ndarray, hp_alpha: float = 0.975):
 
     return hp_out
 
-# High pass Filter
+# Low pass Filter
 # y[n] = 0.840 * y[n-1] + 0.160 * x[n]
 # a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M]
 #                       - a[1]*y[n-1] - ... - a[N]*y[n-N]
