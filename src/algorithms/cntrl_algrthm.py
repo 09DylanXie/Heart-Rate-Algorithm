@@ -12,22 +12,12 @@ def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
     - Dynamic exponential threshold peak finding
     """
     # --- Step 1: Baseline High-Pass Filter ---
-    # y[n] = 0.975 * (y[n-1] + x[n] - x[n-1])
-    # a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M] --> (1.0)*y[n] = hp_alpha*x[n] - hp_alpha*x[n-1]
-    #                       - a[1]*y[n-1] - ... - a[N]*y[n-N] -->                            + hp_alpha*y[n-1]
     hp_alpha = 0.975
-    b_hp = [hp_alpha, -hp_alpha]
-    a_hp = [1.0, -hp_alpha]
-    hp_out = lfilter(b_hp, a_hp, data_buffer)
+    hp_out = high_pass_filter(hp_alpha)
     
     # --- Step 2: Baseline Low-Pass Filter ---
-    # y[n] = 0.840 * y[n-1] + 0.160 * x[n]
-    # a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M]
-    #                       - a[1]*y[n-1] - ... - a[N]*y[n-N]
     lp_alpha = 0.840
-    b_lp = [1.0 - lp_alpha]
-    a_lp = [1.0, -lp_alpha]
-    filt_data = lfilter(b_lp, a_lp, hp_out)
+    filt_data = low_pass_filter(hp_out, lp_alpha)
     
     # --- Step 3: Simple Difference Derivative (DERIV_DIST = 2) ---
     deriv_dist = 2
@@ -72,3 +62,27 @@ def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
             n += 1
             
     return np.array(r_peaks, dtype=int)
+
+# Low pass filter
+# y[n] = 0.975 * (y[n-1] + x[n] - x[n-1])
+# a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M] --> (1.0)*y[n] = hp_alpha*x[n] - hp_alpha*x[n-1]
+#                       - a[1]*y[n-1] - ... - a[N]*y[n-N] -->                            + hp_alpha*y[n-1]
+def high_pass_filter(data_buffer: np.ndarray, hp_alpha: float = 0.975):
+        
+    b_hp = [hp_alpha, -hp_alpha]
+    a_hp = [1.0, -hp_alpha]
+    hp_out = lfilter(b_hp, a_hp, data_buffer)
+
+    return hp_out
+
+# High pass Filter
+# y[n] = 0.840 * y[n-1] + 0.160 * x[n]
+# a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M]
+#                       - a[1]*y[n-1] - ... - a[N]*y[n-N]
+def low_pass_filter(data_buffer: np.ndarray, lp_alpha: float = 0.840):
+        
+    b_lp = [1.0 - lp_alpha]
+    a_lp = [1.0, -lp_alpha]
+    lp_out = lfilter(b_lp, a_lp, data_buffer)
+
+    return lp_out
