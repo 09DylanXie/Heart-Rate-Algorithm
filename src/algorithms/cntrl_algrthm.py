@@ -13,6 +13,8 @@ def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
     """
     # --- Step 1: Baseline High-Pass Filter ---
     # y[n] = 0.975 * (y[n-1] + x[n] - x[n-1])
+    # a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M] --> (1.0)*y[n] = hp_alpha*x[n] - hp_alpha*x[n-1]
+    #                       - a[1]*y[n-1] - ... - a[N]*y[n-N] -->                            + hp_alpha*y[n-1]
     hp_alpha = 0.975
     b_hp = [hp_alpha, -hp_alpha]
     a_hp = [1.0, -hp_alpha]
@@ -20,6 +22,8 @@ def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
     
     # --- Step 2: Baseline Low-Pass Filter ---
     # y[n] = 0.840 * y[n-1] + 0.160 * x[n]
+    # a[0]*y[n] = b[0]*x[n] + b[1]*x[n-1] + ... + b[M]*x[n-M]
+    #                       - a[1]*y[n-1] - ... - a[N]*y[n-N]
     lp_alpha = 0.840
     b_lp = [1.0 - lp_alpha]
     a_lp = [1.0, -lp_alpha]
