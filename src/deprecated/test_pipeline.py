@@ -5,7 +5,7 @@ Unit tests for PPG filtering and heart rate estimation algorithms.
 import numpy as np
 
 from src.algorithms.peak_detection import estimate_hr_peaks
-from src.algorithms.spectral_analysis import estimate_hr_spectral
+from src.deprecated.spectral_analysis import estimate_hr_spectral
 from src.filters.bandpass import butter_bandpass_filter, moving_average, normalize_ac_dc
 from src.utils.data_loader import generate_synthetic_ppg
 from src.utils.plotting import generate_all_report_graphs
