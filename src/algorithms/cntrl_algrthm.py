@@ -87,6 +87,29 @@ def low_pass_filter(data_buffer: np.ndarray, lp_alpha: float = 0.840):
 
     return lp_out
 
+# Calulcate heart rate with an input set beat indices
+# r_peaks: array of indices at which heart beats occured
+# fs: sample rate used in collecting those peaks
+def calculate_hr(r_peaks: np.ndarray, fs: int):
+
+    r_length = len(r_peaks)
+
+    intervals = []
+    for i in range(0, r_length - 1):
+        # Finds interval between two beats
+        intervals.append(r_peaks[i+1] - r_peaks[i])
+
+    # Find average interval
+    sum = 0.0
+    for i in range(0, r_length - 1):
+        sum += intervals[i]
+
+    avg = sum / ((float) (r_length - 1))
+
+    # Calculate and return HR
+    return 60 / (avg / fs)
+
+
 
 # Testing
 # In terminal: python3 src/algorithms/cntrl_algrthm.py  
