@@ -1,0 +1,11 @@
+Heart Rate Pipeline
+
+Step 1: Bandpass filter           (0.5-4Hz)   (5-15Hz)
+
+Step 2: Difference Derivative     (Simple)    (5-point Derivative)
+
+Step 3: Moving Average            (6)         (12)                  Flattens the spikes
+
+Step 4: Squaring                                                    Accentuate the peaks
+
+Step 5: Dynamic Thresholding
