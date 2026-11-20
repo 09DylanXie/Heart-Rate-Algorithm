@@ -2,6 +2,7 @@
 # python3 src/main.py data/processed/Samples.csv 512
 
 from utils.data_loader import read_samples
+from algorithms.cntrl_algrthm import find_peaks_control
 
 if __name__ == "__main__":
     import sys
@@ -13,5 +14,11 @@ if __name__ == "__main__":
     for s in ss:
         print(f"{s.name} #{s.sample_num}: actual={s.actual_hr}, "
               f"estimated={s.estimated_hr}, n={len(s.data)}")
+
+    # Sample test for progress report
+    test_sample = ss[0]
+    test_peaks = find_peaks_control(test_sample.data)
+    test_peaks_length = len(test_peaks)
+    print(f"{test_peaks_length} is how long it is")
 
         

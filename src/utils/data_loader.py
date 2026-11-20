@@ -18,7 +18,7 @@ class Sample:
     sample_num: int
     actual_hr: int
     estimated_hr: int
-    data: list[float] = field(default_factory=list)
+    data: np.ndarray
 
 # Set of Samples
 @dataclass
@@ -150,14 +150,3 @@ def read_samples(file_name: str, data_len: int, dtype=np.float64) -> SampleSet:
         estimated_hr=estimated_hr,
         data=data,
     )
-
-if __name__ == "__main__":
-    import sys
-
-    path, n = sys.argv[1], int(sys.argv[2])
-    ss = read_samples(path, n)
-    print(f"{len(ss)} samples, data shape {ss.data.shape}")
-    print("mean HR error:", ss.hr_error.mean() if len(ss) else "n/a")
-    for s in ss:
-        print(f"{s.name} #{s.sample_num}: actual={s.actual_hr}, "
-              f"estimated={s.estimated_hr}, n={len(s.data)}")

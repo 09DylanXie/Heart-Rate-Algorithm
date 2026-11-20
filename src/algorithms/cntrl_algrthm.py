@@ -13,7 +13,7 @@ def find_peaks_control(data_buffer: np.ndarray, fs: float = 80.0) -> np.ndarray:
     """
     # --- Step 1: Baseline High-Pass Filter ---
     hp_alpha = 0.975
-    hp_out = high_pass_filter(hp_alpha)
+    hp_out = high_pass_filter(data_buffer, hp_alpha)
     
     # --- Step 2: Baseline Low-Pass Filter ---
     lp_alpha = 0.840
@@ -86,3 +86,10 @@ def low_pass_filter(data_buffer: np.ndarray, lp_alpha: float = 0.840):
     lp_out = lfilter(b_lp, a_lp, data_buffer)
 
     return lp_out
+
+
+# Testing
+# In terminal: python3 src/algorithms/cntrl_algrthm.py  
+if __name__ == "__main__":
+
+    print("Hello world!")
